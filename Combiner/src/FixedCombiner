@@ -1,0 +1,80 @@
+WordCountWithFixedCombiner.javaJava
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+public class WordCountWithFixedCombiner
+{
+  public static void main (String [] args) throws Exception
+  {
+    Path inputPath = new Path(args[0]);
+    Path outputPath = new Path(args[1]);
+    Configuration conf = new Configuration();
+
+    // Job Object configuration
+    Job job = new Job();
+    job.setJobName("WordCount4");
+    job.setJarByClass(WordCountWithFixedCombiner.class);
+    
+    job.setMapperClass(WordcountMapper.class);
+    //Set Combiner class as WordcounReducer2 class.
+    job.setCombinerClass(WordcountReducer2.class);
+    job.setReducerClass(WordcountReducer2.class);
+
+    //Set Output Key and value data types
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(IntWritable.class);
+
+    //Set Input and Output formats and paths
+    FileInputFormat.addInputPath(job, inputPath);
+    FileOutputFormat.setOutputPath(job, outputPath);
+
+    System.exit(job.waitForCompletion(true) ? 0:1);
+  }
+}
+ 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+ 
+public class WordCountWithFixedCombiner
+{
+  public static void main (String [] args) throws Exception
+  {
+    Path inputPath = new Path(args[0]);
+    Path outputPath = new Path(args[1]);
+    Configuration conf = new Configuration();
+ 
+    // Job Object configuration
+    Job job = new Job();
+    job.setJobName("WordCount4");
+    job.setJarByClass(WordCountWithFixedCombiner.class);
+    
+    job.setMapperClass(WordcountMapper.class);
+    //Set Combiner class as WordcounReducer2 class.
+    job.setCombinerClass(WordcountReducer2.class);
+    job.setReducerClass(WordcountReducer2.class);
+ 
+    //Set Output Key and value data types
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(IntWritable.class);
+ 
+    //Set Input and Output formats and paths
+    FileInputFormat.addInputPath(job, inputPath);
+    FileOutputFormat.setOutputPath(job, outputPath);
+ 
+    System.exit(job.waitForCompletion(true) ? 0:1);
+  }
+}
