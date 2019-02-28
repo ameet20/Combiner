@@ -1,0 +1,58 @@
+public class MinMaxJob extends Configured implements Tool {
+
+public int run(String[] args) throws Exception {
+        if (args.length != 2) {
+            System.err.println("error");
+            return -1;
+        }
+        
+        // getConf method it's inhertired from Configured class, that's why we should extends Configured
+        Configuration conf = getConf();
+        Job job = Job.getInstance(conf, "TP1");
+ 
+        // Give the job the name of the main class
+        job.setJarByClass(MinMaxJob.class);
+ 
+        // Specify the input format, which will have impact on the key and the value
+        // type of the mapper inputs.
+        job.setInputFormatClass(TextInputFormat.class);
+ 
+        // By specifying TextOutputFormat as an output the format of your file will be
+        // Key.toString()than 4 spaces (\t) than value.toString(), for example 12 14
+        job.setOutputFormatClass(TextOutputFormat.class);
+ 
+        // specify the input paths in the hdfs
+        TextInputFormat.setInputPaths(job, new Path(args[0]));
+ 
+        // specify the output paths in the hdfs We need to ensure that the output file doesn't already exist
+        // because if we run a job and give it an output that is already exist, the job will fail
+        TextOutputFormat.setOutputPath(job, new Path(args[1]));
+ 
+        // Give the job the name of the mapper class
+        job.setMapperClass(MinMaxMapper.class);
+ 
+        // Give the job the name of the reducer class
+        job.setReducerClass(MinMaxReducer.class);
+ 
+        // set the key output type of the mapper
+        job.setMapOutputKeyClass(IntWritable.class);
+        // set the value output type of the mapper
+        job.setMapOutputValueClass(IntWritable.class);
+ 
+        // set the key output type of the reducer
+        job.setOutputKeyClass(NullWritable.class);
+        // set the value output type of the reducer
+        job.setOutputValueClass(Text.class);
+ 
+        //run the job
+        int r = job.waitForCompletion(true) ? 0 : 1;
+        // print the number of bad records on the screen
+        System.out.println(job.getCounters().findCounter("UserCounters", "badInputs").getValue());
+        return r;
+    }
+    public static void main(String[] args) throws Exception {
+        String inputPaths = "hdfs://localhost:9000/training/lab1/inputs/*";
+        String outputPath = "hdfs://localhost:9000/training/lab1/output";
+        ToolRunner.run(new MinMaxJob(), new String[] { inputPaths, outputPath });
+    }
+}
