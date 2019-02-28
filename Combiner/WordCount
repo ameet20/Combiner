@@ -1,0 +1,48 @@
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+ 
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+ 
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+ 
+public class WordCountWithCombiner
+{
+  public static void main (String [] args) throws Exception
+  {
+    //Basic Sanity check to verify the arguments 
+    if (args.length != 2) 
+    {
+        System.err.println("Usage: wordcount <input path> <output path>");
+        System.exit(2);
+    }
+    Path inputPath = new Path(args[0]);
+    Path outputPath = new Path(args[1]);
+    Configuration conf = new Configuration();
+ 
+    // Job Object configuration
+    Job job = new Job();
+    job.setJobName("WordCount3");
+    job.setJarByClass(WordCountWithCombiner.class);
+         
+    //Set Mapper class 
+    job.setMapperClass(WordcountMapper.class);
+    //Set Combiner class as WordcounReducer class.
+    job.setCombinerClass(WordcountReducer.class);
+    job.setReducerClass(WordcountReducer.class);
+ 
+    //Set Output Key and value data types
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(IntWritable.class);
+ 
+    //Set Input and Output formats and paths
+    FileInputFormat.addInputPath(job, inputPath);
+    FileOutputFormat.setOutputPath(job, outputPath);
+ 
+    System.exit(job.waitForCompletion(true) ? 0:1);
+  }
+}
